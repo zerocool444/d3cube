@@ -1,0 +1,100 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href='//cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css' />
+</head>
+<body>
+    <table id="itemTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>In Cube</th>
+                <th>In Stash</th>
+                <th>Character Type</th>
+                <th>Cube Section</th>
+                <th>Affix</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr data-id="{{ item.id }}">
+                <td>{{ item.name }}</td>
+                <td class="checkbox-type" data-type="in_cube">{% if item.in_cube %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}</td>
+                <td class="checkbox-type" data-type="in_stash">{% if item.in_stash %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}</td>
+                <td>{{ item.character_type }}</td>
+                <td>{{ item.cube_slot }}</td>
+                <td>{{ item.affix }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src='//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js'></script>
+    <script>
+        // using jQuery
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+
+        $(function() {
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $("table").DataTable();
+
+            $("#itemTable .checkbox-type").click(function(e) {
+                e.preventDefault();
+
+                if ($(this).find('.glyphicon-ok').length > 0) {
+                    $(this).find('.glyphicon-ok').removeClass('glyphicon-ok').addClass('glyphicon-remove');
+                    var checked = false;
+                } else {
+                    $(this).find('.glyphicon-remove').removeClass('glyphicon-remove').addClass('glyphicon-ok');
+                    var checked = true;
+                }
+
+                var data = {};
+                data[$(this).data('type')] = checked;
+
+                $.ajax({
+                    url: '/' + $(this).closest('tr').data('id') + '/',
+                    type: "PATCH",
+                    dataType: "json",
+                    data: data,
+                }).done(function(data) {
+                    console.log(data);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
