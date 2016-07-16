@@ -8,13 +8,12 @@
     <link rel="stylesheet" type="text/css" href='//cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css' />
 </head>
 <body>
-    <table id="itemTable">
+    <table id="itemTable" class="table table-striped">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>In Cube</th>
                 <th>In Stash</th>
-                <th>Character Type</th>
                 <th>Cube Section</th>
                 <th>Affix</th>
             </tr>
@@ -25,7 +24,6 @@
                 <td>{{ item.name }}</td>
                 <td class="checkbox-type" data-type="in_cube">{% if item.in_cube %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}</td>
                 <td class="checkbox-type" data-type="in_stash">{% if item.in_stash %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}</td>
-                <td>{{ item.character_type }}</td>
                 <td>{{ item.cube_slot }}</td>
                 <td>{{ item.affix }}</td>
             </tr>
@@ -71,7 +69,7 @@
 
             $("table").DataTable();
 
-            $("#itemTable .checkbox-type").click(function(e) {
+            $(document).on("click", "#itemTable .checkbox-type", function(e) {
                 e.preventDefault();
 
                 if ($(this).find('.glyphicon-ok').length > 0) {
