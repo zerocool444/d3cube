@@ -8,28 +8,80 @@
     <link rel="stylesheet" type="text/css" href='//cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css' />
 </head>
 <body>
-    <table id="itemTable" class="table table-striped">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>In Cube</th>
-                <th>In Stash</th>
-                <th>Cube Section</th>
-                <th>Affix</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-            <tr data-id="{{ item.id }}">
-                <td>{{ item.name }}</td>
-                <td class="checkbox-type" data-type="in_cube">{% if item.in_cube %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}</td>
-                <td class="checkbox-type" data-type="in_stash">{% if item.in_stash %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}</td>
-                <td>{{ item.cube_slot }}</td>
-                <td>{{ item.affix }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="container-fluid">
+        <form method="GET" action="/" class="" id="options">
+            <div class="row">
+                <div class="col-lg-1">
+                    <div class="form-group">
+                        <label for="characterType" class="">Character Type</label>
+                        <select name="" id="characterType" class="form-control">
+                            <option value="">Any</option>
+                            {% for character_type_item in character_type_list %}
+                            <option value="{{ character_type_item.id }}"
+                            {% if character_type == character_type_item.id %}
+                            selected
+                            {% endif %}
+                            >{{ character_type_item.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="form-group">
+                        <label for="cubeType" class="">Cube Type</label>
+                        <select name="" id="cubeType" class="form-control">
+                            <option value="">Any</option>
+                            {% for cube_type_item in cube_type_list %}
+                            <option value="{{ cube_type_item.id }}"
+                            {% if cube_type == cube_type_item.id %}
+                            selected
+                            {% endif %}
+                            >{{ cube_type_item.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="form-group">
+                        <label for="showCubedItems">Show Cubed Items</label>
+                        <select name="" id="showCubedItems" class="form-control">
+                            <option value="">Any</option>
+                            <option value="True" {% if in_cube == True %}selected{% endif %}>Yes</option>
+                            <option value="False" {% if in_cube == False %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <table id="itemTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>In Cube</th>
+                            <th>In Stash</th>
+                            <th>Cube Section</th>
+                            <th>Affix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr data-id="{{ item.id }}">
+                            <td>{{ item.name }}</td>
+                            <td class="checkbox-type" data-type="in_cube">{% if item.in_cube %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}</td>
+                            <td class="checkbox-type" data-type="in_stash">{% if item.in_stash %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}</td>
+                            <td>{{ item.cube_slot }}</td>
+                            <td>{{ item.affix }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src='//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js'></script>
@@ -91,6 +143,26 @@
                 }).done(function(data) {
                     console.log(data);
                 });
+            });
+
+            $("#options").submit(function(e){
+                e.preventDefault();
+            });
+
+            $("#options :input").change(function(e) {
+                e.preventDefault();
+
+                var queryParams = [];
+                queryParams.push('characterType=' + $("#characterType").val());
+                queryParams.push('cubeType=' + $("#cubeType").val());
+                queryParams.push('showCubedItems=' + $("#showCubedItems").val());
+
+                if (queryParams.length > 0) {
+                    window.location = '{% url "default" %}?' + queryParams.join('&');
+                } else {
+                    window.location = '{% url "default" %}';
+                }
+
             });
         });
     </script>
