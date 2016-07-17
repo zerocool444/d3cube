@@ -60,7 +60,7 @@ target/
 settings_local.py
 .project
 .pydevproject
-*.sqlite3
+# *.sqlite3
 venv/
 *.ipynb
 local.py

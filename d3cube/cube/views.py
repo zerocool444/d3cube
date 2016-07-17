@@ -16,8 +16,13 @@ def default(request):
         queryset = queryset.filter(cube_slot__name=cube_type)
 
     if in_cube:
-        print(in_cube)
-        queryset = queryset.filter(in_cube=in_cube)
+        if in_cube == "True":
+            in_cube = True
+        else:
+            in_cube = False
+
+        queryset = queryset.filter(in_cube=in_cube)       
+
 
     return render(request, 'cube/default.html', {'items': queryset})
 
